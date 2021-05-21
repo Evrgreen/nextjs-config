@@ -1,13 +1,7 @@
 npm create-next-app <Project Name> 
-create tsconfig.json  @root
-  -add support for absolute paths 
-      -contents : "baseUrl": "./",
-                  "paths" :{
-                      "@components/*":["./components/*"]
-                  }
+
       
-          
-npm run dev to populate tsconfig and spin up server
+
 typescript installs:
 npm i -D typescript @types/react @types/node ts-node
 
@@ -17,11 +11,7 @@ accessibility installs:
 
 testing: 
  -npm i -D @testing-library/jest-dom @testing-library/react babel-jest jest
- -create .babelrc @root 
-    --contents :
-       {
-        "presets": ["next/babel"]
-       }
+ 
   -create jest.setup.ts
        -contents: import "@testing-library/jest-dom";
   -create jest.config.ts
