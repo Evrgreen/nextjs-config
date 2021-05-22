@@ -1,131 +1,87 @@
-npm create-next-app <Project Name> 
-
-      
-
+npm create-next-app <Project Name>   
+create src folder @root for all non nextjs auto created files (components, etc)
+	
+	
 typescript installs:
-npm i -D typescript @types/react @types/node ts-node
+npm i -D typescript @types/react @types/react-dom @types/node ts-node @typescript-eslint/eslint-plugin @typescript-eslint/parser
 
 accessibility installs: 
 	npm i -D axe-core
 
-
+eslint plugins:
+	npm i -D eslint eslint-config-airbnb eslint-config-prettier eslint-import-resolver-typescript eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-prettier eslint-plugin-react eslint-plugin-react-hooks
+	
+	
 testing: 
- -npm i -D @testing-library/jest-dom @testing-library/react babel-jest jest
+ -npm i -D @testing-library/jest-dom @testing-library/user-event @testing-library/react babel-jest jest @types/jest
+	
+dependencies: 
+	npm i cross-env
  
-  -create jest.setup.ts
-       -contents: import "@testing-library/jest-dom";
-  -create jest.config.ts
-       -contents: module.exports = {
-	                  testEnvironment: 'node',
-                   	testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
-                    setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
-	                  moduleNameMapper: {
-		                '^@components(.*)$': '<rootDir>/components$1',
-	                  },
-                    moduleDirectories: ['node_modules', '<rootDir>./'],
-                  };
-  --create test/test-utils.ts
-      -contents: 
-            import { render, RenderOptions, RenderResult } from '@testing-library/react';
-            import React, { ReactElement } from 'react';
+create package.json scripts: 
+	  "dev": "cross-env NODE_OPTIONS='--inspect' next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+	
+	
+create new debugger if needed: 
+	chrome debugger: 
+			"version": "0.2.0",
+				"configurations": [
+					{
+						"type": "node",
+						"request": "attach",
+						"name": "Attach Debugger",
+						"skipFiles": ["<node_internals>/**"],
+						"port": 9229
+					}
+				]
+			}
 
-            interface ProviderProps {
-              children?: NonNullable<React.ReactNode>;
-            }
+convert _app to tsx: 
+	contents: 
+		import '@styles/globals.css';
+ 
+			import { FC } from 'react';
+			import { AppProps } from 'next/app';
+			import Head from "next/head"
+			import Layout from "@components/Layout"
+	
+			const MyApp: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
+			  	
+			    return(
+				  <Head>
+					<meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
+				  </Head>
+				   <Layout>
+					<Component {...pageProps} />;
+			          <Layout/>
+				)
+			};
 
-            const Providers: React.FC<ProviderProps> = ({ children }) => {
-              return <Any Providers yoor app needs or a fragment>
-                        {children};
-                      </closing tag for provider>;
-            };
+			export default MyApp;
 
-            const customRender = (
-              ui: ReactElement,
-              options?: Omit<RenderOptions, 'queries'>,
-            ): RenderResult => render(ui, { wrapper: Providers, ...options });
+create src/test/test-utils.tsx: 
+		contents: 
+			import { render, RenderOptions, RenderResult } from '@testing-library/react';
+			import React, { ReactElement } from 'react';
 
-            export * from '@testing-library/react';
+			interface ProviderProps {
+				children?: NonNullable<React.ReactNode>;
+			}
 
-            export { customRender as render };
-     -create test script in package.json: 
-              "test": "jest --env=jsdom"
-	      
-	   
-Configure eslint :
+			const Providers: React.FC<ProviderProps> = ({ children }) => {
+				return <>{children};</>;
+			};
 
-     -create .eslintignore @root: 
-     		-contents:  
-				node_modules
-				coverage
-				.next
-     -create .eslintrc.js @root:
-     		-content: 
-			module.exports = {
-				  env: {
-				    browser: true,
-				    es2021: true,
-				    node: true,
-				    jest: true,
-				  },
-				  extends: [
-				    'plugin:@typescript-eslint/recommended',
-				    'plugin:react/recommended',
-				    'plugin:react-hooks/recommended',
-				    'airbnb',
-				    'plugin:prettier/recommended',
-				    'plugin:import/errors',
-				    'plugin:import/warnings',
-				    'plugin:import/typescript',
-				    'plugin:jsx-a11y/recommended',
-				  ],
-				  parser: '@typescript-eslint/parser',
-				  parserOptions: {
-				    ecmaFeatures: {
-				      jsx: true,
-				    },
-				    ecmaVersion: 12,
-				    sourceType: 'module',
-				  },
-				  plugins: ['react', 'react-hooks', '@typescript-eslint', 'prettier', 'import', 'jsx-a11y'],
-				  rules: {
-				    'prettier/prettier': 'error',
-				    'react/react-in-jsx-scope': 'off',
-				    'react/jsx-filename-extension': 'off',
-				    'import/extensions': 'off',
-				    'import/no-unresolved': 'error',
-				    'import/order': [
-				      'error',
-				      {
-					groups: ['builtin', 'external', 'internal', ['parent', 'sibling', 'object', 'index']],
-					pathGroups: [
-					  {
-					    pattern: 'react',
-					    group: 'external',
-					    position: 'before',
-					  },
-					],
-					pathGroupsExcludedImportTypes: ['react'],
-					'newlines-between': 'never',
-					alphabetize: {
-					  order: 'asc',
-					  caseInsensitive: true,
-					},
-				      },
-				    ],
-				    'import/no-extraneous-dependencies': [
-				      'error',
-				      { devDependencies: ['jest.setup.ts', '**/*.test.tsx', '**/*.spec.tsx', '**/*.test.ts', '**/*.spec.ts'] },
-				    ],
-				  },
-				  settings: {
-				    react: {
-				      version: 'detect', // Tells eslint-plugin-react to automatically detect the version of React to use
-				    },
-				    'import/resolver': {
-				      // use <root>/tsconfig.json
-				      typescript: {
-					project: '.',
-				      },
-				    },
-				  },
-				};
+			const customRender = (
+				ui: ReactElement,
+				options?: Omit<RenderOptions, 'queries'>,
+			): RenderResult => render(ui, { wrapper: Providers, ...options });
+
+			export * from '@testing-library/react';
+
+			export { customRender as render };
